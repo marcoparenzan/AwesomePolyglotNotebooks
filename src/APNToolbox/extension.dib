@@ -1,0 +1,7 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"C#","aliases":["c#","C#"]},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"vscode","aliases":["frontend"],"languageName":null},{"name":"javascript","aliases":["js"],"languageName":"JavaScript"},{"name":"webview","aliases":[]},{"name":"sql","languageName":"SQL","aliases":[]}]}}
+
+#!csharp
+
+APNToolbox.Extension.Load(Microsoft.DotNet.Interactive.KernelInvocationContext.Current.HandlingKernel.RootKernel);

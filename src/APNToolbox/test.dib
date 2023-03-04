@@ -1,0 +1,19 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"C#","aliases":["c#","C#"]},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"webview","aliases":[]},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"vscode","aliases":["frontend"]}]}}
+
+#!pwsh
+
+dotnet pack D:\repos\AwesomePolyglotNotebooks\src\APNToolbox\APNToolbox.csproj /p:PackageVersion=0.0.1 -o D:\Packages
+
+#!csharp
+
+#i "nuget:D:\Packages"
+
+#!csharp
+
+#r "nuget:APNToolbox,0.0.1"
+
+#!csharp
+
+#!now
