@@ -2,7 +2,7 @@
 
 Here I want to collect all my experimentations with .NET Interactive and Polyglot Notebooks
 
-Here I want to collect some awesome resources about Polyglot Notebooks and .NET Interactive [Awesome Resources](AwesomeResources)
+Here I want to collect some awesome resources about Polyglot Notebooks and .NET Interactive [Awesome Resources](AwesomeResources.md)
 
 ## License
 
