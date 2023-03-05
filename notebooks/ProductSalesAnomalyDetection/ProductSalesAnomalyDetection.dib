@@ -1,0 +1,133 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"C#","aliases":["c#","C#"]},{"name":"vscode","aliases":["frontend"],"languageName":null},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"webview","aliases":[]}]}}
+
+#!csharp
+
+using System.IO;
+var text = File.ReadAllText("product-sales.csv");
+
+#!csharp
+
+text
+
+#!csharp
+
+var enus = new System.Globalization.CultureInfo("en-us");
+var productSales = text.Split('\r', '\n').Where(xx => !string.IsNullOrWhiteSpace(xx)).Select(xx => xx.Split(',')).Skip(1).Select(xx => new { Day = xx[0], Value = float.Parse(xx[1], enus)}).ToArray();
+
+#!csharp
+
+productSales
+
+#!csharp
+
+#r "nuget:XPlot.Plotly.Interactive"
+
+#!csharp
+
+using XPlot.Plotly;
+using XPlot.Plotly.Interactive;
+
+#!csharp
+
+var chart = new Scatter
+{
+    x = productSales.Select(xx => xx.Day),
+    y = productSales.Select(xx => xx.Value)
+};
+var plot = Chart.Plot(new[] { chart });
+display(plot);
+
+#!csharp
+
+#r "nuget:Microsoft.ML"
+#r "nuget:Microsoft.ML.TimeSeries"
+
+#!csharp
+
+using Microsoft.ML;
+using Microsoft.ML.Data;
+
+#!csharp
+
+public class ProductSalesData
+{
+    [LoadColumn(0)]
+    public string Day { get; set; }
+    [LoadColumn(1)]
+    public float Value { get; set; }
+}
+
+#!csharp
+
+var mlProductSales = productSales.Select(xx => new ProductSalesData { Day = xx.Day, Value = xx.Value }).ToArray();
+
+#!csharp
+
+mlProductSales
+
+#!csharp
+
+var mlContext = new MLContext();
+
+#!csharp
+
+IDataView dataView = mlContext.Data.LoadFromEnumerable<ProductSalesData>(mlProductSales);
+
+#!csharp
+
+public class ProductSalesPrediction
+{
+    [VectorType(3)]
+    public double[] Prediction { get; set; }
+}
+
+#!csharp
+
+var iidSpikeEstimator = mlContext.Transforms.DetectIidSpike(outputColumnName: nameof(ProductSalesPrediction.Prediction), inputColumnName: nameof(ProductSalesData.Value), confidence: 95, pvalueHistoryLength: productSales.Length/4);
+
+#!csharp
+
+var emptyDataSet = mlContext.Data.LoadFromEnumerable(new ProductSalesData[] {});
+
+#!csharp
+
+ITransformer iidSpikeTransform = iidSpikeEstimator.Fit(emptyDataSet);
+
+#!csharp
+
+IDataView transformedData = iidSpikeTransform.Transform(dataView);
+
+#!csharp
+
+var predictions = mlContext.Data.CreateEnumerable<ProductSalesPrediction>(transformedData, reuseRowObject:false);
+
+#!csharp
+
+predictions.Where(xx => xx.Prediction[0] == 1)
+
+#!csharp
+
+var detected = productSales.Zip(predictions).Where(xx => xx.Second.Prediction[0] == 1).Select(xx => xx.First).ToArray();
+
+#!csharp
+
+detected
+
+#!csharp
+
+var chartAnomalies = new Scatter
+{
+    x = detected.Select(xx => xx.Day),
+    y = detected.Select(xx => xx.Value),
+    mode = "markers"
+};
+
+#!csharp
+
+var plot = Chart.Plot(new[] { chart, chartAnomalies });
+
+#!csharp
+
+display(plot)
