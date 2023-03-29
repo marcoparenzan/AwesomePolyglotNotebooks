@@ -1,0 +1,63 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!markdown
+
+# Writing Azure and IoT code inside Polyglot Notebooks
+
+#!markdown
+
+Do you know you can sketch and test Azure operations and IoT code using Polyglot Notebooks? Let's see how to do that in this video.
+
+#!html
+
+<img src="Slides\slide1.png"/>
+
+#!markdown
+
+As a developer, I do most of my job inside Microsoft Visual Studio, mainly for product development or customer projects.
+I use it also for sketching code during study sessions. The introduction in C# 9 of top level statements has simplified a lot my job without the need of writing boilerplate class code, when not really needed. But I cannot avoid the classic edit-compile-run-debug-edit cycle.
+So here comes the dotnet Polyglot Notebooks where I can really sketch the code with fast and easy edit/run cycles.
+Besides that, when I need to do operations, like creating Azure resources, I have the same need, sketching and trying Azure CLI or PowerShell commands, annotating parameters, failing and correcting commands more and more time.
+Polyglot Notebooks can satisfy both these needs. Let's see how to do that in this video using Azure IoT as a scenario: creating the required Azure resources and writing some csharp code to send messages to the cloud.
+
+#!markdown
+
+Let's begin with operations in Azure and I will use Azure CLI inside a PowerShell session. I need to connect to my Azure subscription, so I can create Azure resources, mainly a Resource Group and an IoT Hub instance. Before doing that, two steps are necessary. First let's login to Azure. This will require to switch to the browser and login interactively at the Azure AD prompt.
+
+#!pwsh
+
+az login --output table
+
+#!markdown
+
+Then we need to ensure that you are using the correct subscription if you own or you have access to several subscriptions. The previous command will list all the available subs you can select directly via string name.
+
+#!pwsh
+
+az account set --subscription "Visual Studio Ultimate with MSDN"
+
+#!markdown
+
+Now that you are logged in correctly, you can start creating the resources we need. We start with the resource group and I give it "awesomepolyglotnotebooks" as a name. I use westeurope as a location, but you can obviously choose the location you prefer and that it is useful for your busines. So with AZ CLI I create the resource group.
+
+#!pwsh
+
+az group create --location westeurope --name awesomepolyglotnotebooks
+
+#!markdown
+
+Now I can create the Azure IoT Hub instance inside the resource group yet created. For convenience I give the IoT Hub resource the same name as resource group, but you can obviously choose the name you prefer or need.
+
+#!pwsh
+
+az iot hub create --resource-group awesomepolyglotnotebooks --name awesomepolyglotnotebooks --location westeurope
+
+#!pwsh
+
+az iot hub device-identity create --device-id testdevice --auth-method shared_private_key --hub-name awesomepolyglotnotebooks
+
+#!pwsh
+
+az iot hub device-identity connection-string show  --device-id testdevice --hub-name awesomepolyglotnotebooks
